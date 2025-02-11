@@ -25,6 +25,11 @@ func main() {
 	mux.HandleFunc("PATCH /api/databases/:database", handler.UpdateDatabase)
 	mux.HandleFunc("DELETE /api/databases/:database", handler.DeleteDatabase)
 
+	// Auth routes
+	mux.HandleFunc("POST /api/login", handler.Login)
+	mux.HandleFunc("POST /api/logout", handler.Logout)
+	mux.HandleFunc("POST /api/register", handler.Register)
+
 	spaFS, err := fs.Sub(dist, "web/dist")
 	if err != nil {
 		log.Fatal(err)
