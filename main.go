@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/shakibhasan09/mydbspace/internal/api/handler"
 	"github.com/shakibhasan09/mydbspace/internal/api/middleware"
 )
 
@@ -15,13 +16,21 @@ import (
 var dist embed.FS
 
 func main() {
+	mux := http.NewServeMux()
+
+	// Databases routes
+	mux.HandleFunc("GET /api/databases", handler.GetDatabases)
+	mux.HandleFunc("POST /api/databases", handler.CreateDatabase)
+	mux.HandleFunc("GET /api/databases/:database", handler.GetDatabase)
+	mux.HandleFunc("PATCH /api/databases/:database", handler.UpdateDatabase)
+	mux.HandleFunc("DELETE /api/databases/:database", handler.DeleteDatabase)
+
 	spaFS, err := fs.Sub(dist, "web/dist")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	mux := http.NewServeMux()
-
+	// SPA routes
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasPrefix(r.URL.Path, "/api/") {
 			http.NotFound(w, r)
@@ -34,11 +43,8 @@ func main() {
 		}
 
 		http.FileServer(http.FS(spaFS)).ServeHTTP(w, r)
-
 	})
 
-	handler := middleware.LoggingMiddleware(middleware.AuthMiddleware(mux))
-
 	log.Println("Server running on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", handler))
+	log.Fatal(http.ListenAndServe(":8080", middleware.LoggingMiddleware(middleware.AuthMiddleware(mux))))
 }
