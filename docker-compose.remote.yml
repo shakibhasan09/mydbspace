@@ -1,0 +1,38 @@
+services:
+  traefik:
+    image: "traefik:v3.3"
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+
+      - "--entryPoints.web.address=:80"
+      - "--entryPoints.websecure.address=:443"
+
+      - "--entryPoints.postgres.address=:5432"
+
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=shakibhasan.me09@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "5432:5432"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  mydb:
+    image: "postgres"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "postgres"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.mydb.entrypoints=postgres"
+      - "traefik.tcp.routers.mydb.rule=HostSNI(`mydb.nodeflare.dev`)"
+      - "traefik.tcp.routers.mydb.tls=true"
+      - "traefik.tcp.routers.mydb.tls.certresolver=myresolver"
+      - "traefik.tcp.services.mydb.loadbalancer.server.port=5432"
