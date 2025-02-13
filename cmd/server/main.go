@@ -33,6 +33,13 @@ func main() {
 	api.Put("/volumes/:uuid", handler.UpdateVolume)
 	api.Delete("/volumes/:uuid", handler.DeleteVolume)
 
+	// Databases
+	api.Get("/databases", handler.GetDatabases)
+	api.Get("/databases/:uuid", handler.GetDatabase)
+	api.Post("/databases", handler.CreateDatabase)
+	api.Put("/databases/:uuid", handler.UpdateDatabase)
+	api.Delete("/databases/:uuid", handler.DeleteDatabase)
+
 	app.Get("*", func(c *fiber.Ctx) error {
 		return c.SendFile("web/dist/index.html")
 	})
