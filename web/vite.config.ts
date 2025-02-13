@@ -11,4 +11,10 @@ export default defineConfig({
       "@web": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    watch: {
+      usePolling: true,
+      interval: 1000,
+    },
+  },
 });
