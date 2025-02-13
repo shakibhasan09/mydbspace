@@ -5,6 +5,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/basicauth"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/shakibhasan09/mydbspace/internal/api/handler"
 )
 
 func main() {
@@ -12,6 +14,7 @@ func main() {
 
 	app.Use(logger.New())
 	app.Use(helmet.New())
+	app.Use(recover.New())
 
 	app.Static("/", "web/dist")
 
@@ -23,11 +26,12 @@ func main() {
 		},
 	}))
 
-	api.Get("/volumes", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{
-			"message": "Hello, World!",
-		})
-	})
+	// Volumes
+	api.Get("/volumes", handler.GetVolumes)
+	api.Get("/volumes/:uuid", handler.GetVolume)
+	api.Post("/volumes", handler.CreateVolume)
+	api.Put("/volumes/:uuid", handler.UpdateVolume)
+	api.Delete("/volumes/:uuid", handler.DeleteVolume)
 
 	app.Get("*", func(c *fiber.Ctx) error {
 		return c.SendFile("web/dist/index.html")
