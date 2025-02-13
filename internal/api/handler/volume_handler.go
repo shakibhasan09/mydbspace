@@ -2,22 +2,22 @@ package handler
 
 import "github.com/gofiber/fiber/v2"
 
-func GetDatabases(c *fiber.Ctx) error {
+func GetVolumes(c *fiber.Ctx) error {
 	return c.SendString("Hello, World!")
 }
 
-func CreateDatabase(c *fiber.Ctx) error {
+func CreateVolume(c *fiber.Ctx) error {
 	return c.SendString("Hello, World!")
 }
 
-func DeleteDatabase(c *fiber.Ctx) error {
+func DeleteVolume(c *fiber.Ctx) error {
 	return c.SendString("Hello, World!")
 }
 
-func UpdateDatabase(c *fiber.Ctx) error {
+func UpdateVolume(c *fiber.Ctx) error {
 	return c.SendString("Hello, World!")
 }
 
-func GetDatabase(c *fiber.Ctx) error {
+func GetVolume(c *fiber.Ctx) error {
 	return c.SendString("Hello, World!")
 }

@@ -1,15 +1,15 @@
 package handler
 
-import "net/http"
+import "github.com/gofiber/fiber/v2"
 
-func Login(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Login"))
+func Login(c *fiber.Ctx) error {
+	return c.SendString("Hello, World!")
 }
 
-func Logout(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Logout"))
+func Logout(c *fiber.Ctx) error {
+	return c.SendString("Hello, World!")
 }
 
-func Register(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Register"))
+func Register(c *fiber.Ctx) error {
+	return c.SendString("Hello, World!")
 }
