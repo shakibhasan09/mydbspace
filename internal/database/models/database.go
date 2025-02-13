@@ -1,17 +1,15 @@
 package models
 
 type Database struct {
-	Uuid        string `json:"uuid"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Type        string `json:"type"`
-	Host        string `json:"host"`
-	Port        int    `json:"port"`
-	Username    string `json:"username"`
-	Password    string `json:"password"`
-	Database    string `json:"database"`
-	SSLMode     string `json:"sslmode"`
-	Image       string `json:"image"`
-	CreatedAt   string `json:"created_at"`
-	UpdatedAt   string `json:"updated_at"`
+	Uuid         string `json:"uuid"`
+	VolumeUuid   string `json:"volume_uuid"`
+	Name         string `json:"name"`
+	Type         string `json:"type"`
+	ImageName    string `json:"image_name"`
+	ImageVersion string `json:"image_version"`
+	Environment  string `json:"environment"`
+	Domain       string `json:"domain"`
+	Status       string `json:"status"`
+	CreatedAt    string `json:"created_at"`
+	UpdatedAt    string `json:"updated_at"`
 }
