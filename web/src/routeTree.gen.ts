@@ -18,7 +18,6 @@ import { Route as publicIndexImport } from './routes/__public/index'
 // Create Virtual Routes
 
 const dashboardRouteLazyImport = createFileRoute('/__dashboard')()
-const dashboardIndexLazyImport = createFileRoute('/__dashboard/')()
 const dashboardDbmanageLazyImport = createFileRoute('/__dashboard/dbmanage')()
 const dashboardDblistLazyImport = createFileRoute('/__dashboard/dblist')()
 const dashboardDbcreateLazyImport = createFileRoute('/__dashboard/dbcreate')()
@@ -46,14 +45,6 @@ const dashboardRouteLazyRoute = dashboardRouteLazyImport
     getParentRoute: () => rootRoute,
   } as any)
   .lazy(() => import('./routes/__dashboard/route.lazy').then((d) => d.Route))
-
-const dashboardIndexLazyRoute = dashboardIndexLazyImport
-  .update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => dashboardRouteLazyRoute,
-  } as any)
-  .lazy(() => import('./routes/__dashboard/index.lazy').then((d) => d.Route))
 
 const publicIndexRoute = publicIndexImport.update({
   id: '/__public/',
@@ -179,13 +170,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof publicIndexImport
       parentRoute: typeof rootRoute
     }
-    '/__dashboard/': {
-      id: '/__dashboard/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof dashboardIndexLazyImport
-      parentRoute: typeof dashboardRouteLazyImport
-    }
     '/__dashboard/databases/': {
       id: '/__dashboard/databases/'
       path: '/databases'
@@ -230,7 +214,6 @@ interface dashboardRouteLazyRouteChildren {
   dashboardDbcreateLazyRoute: typeof dashboardDbcreateLazyRoute
   dashboardDblistLazyRoute: typeof dashboardDblistLazyRoute
   dashboardDbmanageLazyRoute: typeof dashboardDbmanageLazyRoute
-  dashboardIndexLazyRoute: typeof dashboardIndexLazyRoute
   dashboardDatabasesIndexLazyRoute: typeof dashboardDatabasesIndexLazyRoute
   dashboardSettingsIndexLazyRoute: typeof dashboardSettingsIndexLazyRoute
   dashboardVolumesIndexLazyRoute: typeof dashboardVolumesIndexLazyRoute
@@ -242,7 +225,6 @@ const dashboardRouteLazyRouteChildren: dashboardRouteLazyRouteChildren = {
   dashboardDbcreateLazyRoute: dashboardDbcreateLazyRoute,
   dashboardDblistLazyRoute: dashboardDblistLazyRoute,
   dashboardDbmanageLazyRoute: dashboardDbmanageLazyRoute,
-  dashboardIndexLazyRoute: dashboardIndexLazyRoute,
   dashboardDatabasesIndexLazyRoute: dashboardDatabasesIndexLazyRoute,
   dashboardSettingsIndexLazyRoute: dashboardSettingsIndexLazyRoute,
   dashboardVolumesIndexLazyRoute: dashboardVolumesIndexLazyRoute,
@@ -259,7 +241,7 @@ export interface FileRoutesByFullPath {
   '/dbcreate': typeof dashboardDbcreateLazyRoute
   '/dblist': typeof dashboardDblistLazyRoute
   '/dbmanage': typeof dashboardDbmanageLazyRoute
-  '/': typeof dashboardIndexLazyRoute
+  '/': typeof publicIndexRoute
   '/databases': typeof dashboardDatabasesIndexLazyRoute
   '/settings': typeof dashboardSettingsIndexLazyRoute
   '/volumes': typeof dashboardVolumesIndexLazyRoute
@@ -268,10 +250,11 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
+  '': typeof dashboardRouteLazyRouteWithChildren
   '/dbcreate': typeof dashboardDbcreateLazyRoute
   '/dblist': typeof dashboardDblistLazyRoute
   '/dbmanage': typeof dashboardDbmanageLazyRoute
-  '/': typeof dashboardIndexLazyRoute
+  '/': typeof publicIndexRoute
   '/databases': typeof dashboardDatabasesIndexLazyRoute
   '/settings': typeof dashboardSettingsIndexLazyRoute
   '/volumes': typeof dashboardVolumesIndexLazyRoute
@@ -286,7 +269,6 @@ export interface FileRoutesById {
   '/__dashboard/dblist': typeof dashboardDblistLazyRoute
   '/__dashboard/dbmanage': typeof dashboardDbmanageLazyRoute
   '/__public/': typeof publicIndexRoute
-  '/__dashboard/': typeof dashboardIndexLazyRoute
   '/__dashboard/databases/': typeof dashboardDatabasesIndexLazyRoute
   '/__dashboard/settings/': typeof dashboardSettingsIndexLazyRoute
   '/__dashboard/volumes/': typeof dashboardVolumesIndexLazyRoute
@@ -309,6 +291,7 @@ export interface FileRouteTypes {
     | '/databases/new'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | ''
     | '/dbcreate'
     | '/dblist'
     | '/dbmanage'
@@ -325,7 +308,6 @@ export interface FileRouteTypes {
     | '/__dashboard/dblist'
     | '/__dashboard/dbmanage'
     | '/__public/'
-    | '/__dashboard/'
     | '/__dashboard/databases/'
     | '/__dashboard/settings/'
     | '/__dashboard/volumes/'
@@ -364,7 +346,6 @@ export const routeTree = rootRoute
         "/__dashboard/dbcreate",
         "/__dashboard/dblist",
         "/__dashboard/dbmanage",
-        "/__dashboard/",
         "/__dashboard/databases/",
         "/__dashboard/settings/",
         "/__dashboard/volumes/",
@@ -386,10 +367,6 @@ export const routeTree = rootRoute
     },
     "/__public/": {
       "filePath": "__public/index.tsx"
-    },
-    "/__dashboard/": {
-      "filePath": "__dashboard/index.lazy.tsx",
-      "parent": "/__dashboard"
     },
     "/__dashboard/databases/": {
       "filePath": "__dashboard/databases/index.lazy.tsx",
