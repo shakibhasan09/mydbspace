@@ -155,6 +155,21 @@ export const DatabasesCreate = (props: DatabasesCreateProps) => {
                 )}
               />
             )}
+            {!props.form.watch("usetls") && (
+              <FormField
+                control={props.form.control}
+                name="port"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Public Port</FormLabel>
+                    <FormControl>
+                      <Input placeholder="5432" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </CardContent>
         </Card>
 

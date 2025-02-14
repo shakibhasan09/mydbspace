@@ -19,6 +19,7 @@ export const formSchema = z.object({
     .array(z.object({ key: z.string(), value: z.string() }))
     .default([]),
   domain: z.string().optional(),
+  port: z.number().optional(),
   usetls: z.boolean().default(false),
 });
 

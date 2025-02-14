@@ -7,6 +7,7 @@ export type Database = {
   image_version: string;
   environment?: string;
   domain?: string;
+  port?: number;
   status: string;
   created_at: string;
   updated_at: string;

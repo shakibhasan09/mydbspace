@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS databases (
   image_version text NOT NULL,
   environment text,
   domain text,
+  port int,  
   status text NOT NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
