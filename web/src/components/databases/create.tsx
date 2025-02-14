@@ -1,5 +1,5 @@
 import { formSchemaType } from "@web/routes/__dashboard/databases/new/index.lazy";
-import { Archive, Container, Database, Plus } from "lucide-react";
+import { Archive, Container, Database, Loader2, Plus } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import {
   Card,
@@ -34,12 +34,13 @@ import { Skeleton } from "../ui/skeleton";
 
 type DatabasesCreateProps = {
   form: UseFormReturn<formSchemaType>;
+  loading: boolean;
 };
 
 export const DatabasesCreate = (props: DatabasesCreateProps) => {
   const [environment, setEnvironment] = React.useState<
     formSchemaType["environment"]
-  >([{ key: "", value: "" }]);
+  >([]);
 
   const loader = useLoaderData({ from: "/__dashboard/databases/new/" });
 
@@ -238,14 +239,14 @@ export const DatabasesCreate = (props: DatabasesCreateProps) => {
               size="icon"
               type="button"
               onClick={() =>
-                setEnvironment([...environment, { key: "", value: "" }])
+                setEnvironment([...environment!, { key: "", value: "" }])
               }
             >
               <Plus className="size-5" />
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
-            {environment.map((env, index) => (
+            {environment!.map((env, index) => (
               <div className="grid grid-cols-2 gap-4" key={index}>
                 <FormField
                   control={props.form.control}
@@ -310,7 +311,12 @@ export const DatabasesCreate = (props: DatabasesCreateProps) => {
           <Separator />
           <CardFooter className="pt-6 justify-end">
             <Button type="submit" variant="outline">
-              <Database /> Create Database
+              {props.loading ? (
+                <Loader2 className="mr-2 animate-spin" />
+              ) : (
+                <Database />
+              )}{" "}
+              Create Database
             </Button>
           </CardFooter>
         </Card>

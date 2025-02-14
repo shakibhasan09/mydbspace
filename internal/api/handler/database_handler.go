@@ -1,6 +1,9 @@
 package handler
 
 import (
+	"encoding/json"
+	"log"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/shakibhasan09/mydbspace/internal/database"
@@ -15,45 +18,68 @@ func GetDatabases(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	// time.Sleep(5 * time.Second)
-
 	return c.JSON(databases)
+}
+
+type Environment struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+type DatabaseConfig struct {
+	VolumeUuid   string         `json:"volume_uuid"`
+	Name         string         `json:"name"`
+	Type         string         `json:"type"`
+	ImageName    string         `json:"image_name"`
+	ImageVersion string         `json:"image_version"`
+	Environment  *[]Environment `json:"environment"`
+	Port         *int           `json:"port"`
+	UseTLS       bool           `json:"usetls"`
+	Domain       *string        `json:"domain"`
 }
 
 func CreateDatabase(c *fiber.Ctx) error {
 	db := database.GetDB()
 
-	body := models.Database{}
+	var body DatabaseConfig
 	if err := c.BodyParser(&body); err != nil {
+		log.Println("Error parsing body:", err)
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	// TODO: Validate body
+
+	envJSON, err := json.Marshal(body.Environment)
+	if err != nil {
+		log.Println("Error marshalling environment:", err)
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
 	volume := models.Volume{}
 	if err := db.Get(&volume, "SELECT * FROM volumes WHERE uuid = ?", body.VolumeUuid); err != nil {
+		log.Println("Error getting volume:", err)
 		return fiber.NewError(fiber.StatusNotFound, err.Error())
 	}
 
 	database := models.Database{}
-	if err := db.Get(&database, "SELECT * FROM databases WHERE volume_uuid = ?", body.VolumeUuid); err != nil {
-		return fiber.NewError(fiber.StatusNotFound, err.Error())
-	}
-	if len(database.Uuid) > 0 {
-		return fiber.NewError(fiber.StatusConflict, "This volume already has a database")
+	if err := db.Get(&database, "SELECT * FROM databases WHERE volume_uuid = ?", body.VolumeUuid); err == nil {
+		log.Println("Volume already has a database")
+		return fiber.NewError(fiber.StatusNotFound, "Volume already has a database")
 	}
 
-	// TODO: Validate body
-
-	if _, err := db.NamedExec("INSERT INTO databases (uuid, volume_uuid, name, type, image_name, image_version, environment, domain, status) VALUES (:uuid, :volume_uuid, :name, :type, :image_name, :image_version, :environment, :domain, :status)", &models.Database{
+	if _, err := db.NamedExec("INSERT INTO databases (uuid, volume_uuid, name, type, image_name, image_version, environment, domain, port, status) VALUES (:uuid, :volume_uuid, :name, :type, :image_name, :image_version, :environment, :domain, :port, :status)", &models.Database{
 		Uuid:         uuid.New().String(),
 		VolumeUuid:   volume.Uuid,
 		Name:         body.Name,
 		Type:         body.Type,
 		ImageName:    body.ImageName,
 		ImageVersion: body.ImageVersion,
-		Environment:  body.Environment,
+		Environment:  string(envJSON),
 		Domain:       body.Domain,
+		Port:         body.Port,
 		Status:       "provisioning",
 	}); err != nil {
+		log.Println("Error inserting database:", err)
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 

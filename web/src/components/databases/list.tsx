@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
 import { Database } from "@web/types/database";
 import { api } from "@web/utils/api";
@@ -19,6 +19,8 @@ type DatabasesListProps = {
 };
 
 export const DatabasesList = (props: DatabasesListProps) => {
+  const router = useRouter();
+
   const queryClient = useQueryClient();
 
   const [deleteDialog, setDeleteDialog] = React.useState(false);
@@ -27,9 +29,13 @@ export const DatabasesList = (props: DatabasesListProps) => {
     await api(`/api/databases/${database_uuid}`, { method: "DELETE" }).then(
       (res) => res.json()
     );
-    toast.success("Database deleted successfully");
-    queryClient.invalidateQueries({ queryKey: ["databases"] });
+    await queryClient.invalidateQueries({
+      queryKey: ["databases"],
+      type: "all",
+    });
+    await router.invalidate();
     setDeleteDialog(false);
+    toast.success("Database deleted successfully");
   };
 
   const columns: ColumnDef<Database>[] = [
