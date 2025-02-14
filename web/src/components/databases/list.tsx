@@ -1,48 +1,17 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
 import { Database } from "@web/types/database";
+import { api } from "@web/utils/api";
 import { cn } from "@web/utils/cn";
-import { DatabaseIcon } from "lucide-react";
+import { DatabaseIcon, Trash } from "lucide-react";
+import React from "react";
+import { toast } from "sonner";
+import { MyAlertDialog } from "../shared/alert-dialog";
 import { DataTable } from "../shared/table";
-import { Card, CardContent } from "../ui/card";
 import { Badge } from "../ui/badge";
-
-const columns: ColumnDef<Database>[] = [
-  {
-    accessorKey: "uuid",
-    header: "Instance ID",
-  },
-  {
-    accessorKey: "name",
-    header: "Instance Name",
-  },
-  {
-    accessorKey: "type",
-    header: "Database Type",
-  },
-  {
-    accessorKey: "image_name",
-    header: "Image Name",
-  },
-  {
-    accessorKey: "image_version",
-    header: "Image Version",
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => <Badge variant="outline">{row.original.status}</Badge>,
-  },
-  {
-    accessorKey: "created_at",
-    header: "Created At",
-    cell: ({ row }) => (
-      <span>{new Date(row.original.created_at).toDateString()}</span>
-    ),
-  },
-  {
-    id: "actions",
-  },
-];
+import { Button, buttonVariants } from "../ui/button";
+import { Card, CardContent } from "../ui/card";
 
 type DatabasesListProps = {
   className?: string;
@@ -50,6 +19,83 @@ type DatabasesListProps = {
 };
 
 export const DatabasesList = (props: DatabasesListProps) => {
+  const queryClient = useQueryClient();
+
+  const [deleteDialog, setDeleteDialog] = React.useState(false);
+
+  const handleDeleteDatabase = async (database_uuid: string) => {
+    await api(`/api/databases/${database_uuid}`, { method: "DELETE" }).then(
+      (res) => res.json()
+    );
+    toast.success("Database deleted successfully");
+    queryClient.invalidateQueries({ queryKey: ["databases"] });
+    setDeleteDialog(false);
+  };
+
+  const columns: ColumnDef<Database>[] = [
+    {
+      accessorKey: "uuid",
+      header: "Instance ID",
+    },
+    {
+      accessorKey: "name",
+      header: "Instance Name",
+    },
+    {
+      accessorKey: "type",
+      header: "Database Type",
+    },
+    {
+      accessorKey: "image_name",
+      header: "Image Name",
+    },
+    {
+      accessorKey: "image_version",
+      header: "Image Version",
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => <Badge variant="outline">{row.original.status}</Badge>,
+    },
+    {
+      accessorKey: "created_at",
+      header: "Created At",
+      cell: ({ row }) => (
+        <span>{new Date(row.original.created_at).toDateString()}</span>
+      ),
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2 justify-end">
+          <Link to="." className={buttonVariants({ variant: "outline" })}>
+            View
+          </Link>
+          <MyAlertDialog
+            trigger={
+              <Button variant="destructive" size="icon">
+                <Trash />
+              </Button>
+            }
+            continueButton={
+              <Button
+                variant="destructive"
+                onClick={() => handleDeleteDatabase(row.original.uuid)}
+              >
+                <Trash /> Delete Database
+              </Button>
+            }
+            open={deleteDialog}
+            onOpenChange={setDeleteDialog}
+            title="Delete Database"
+            description="Are you sure you want to delete this database?"
+          />
+        </div>
+      ),
+    },
+  ];
+
   return (
     <Card className={cn("bg-muted/50", props.className)}>
       <CardContent className="p-0">

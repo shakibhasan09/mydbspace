@@ -6,6 +6,7 @@ import { ThemeProvider } from "@web/providers/theme";
 import { routeTree } from "@web/routeTree.gen";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { Toaster } from "./components/ui/sonner";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ createRoot(document.getElementById("root")!).render(
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
+        <Toaster />
       </QueryClientProvider>
     </ThemeProvider>
   </StrictMode>
