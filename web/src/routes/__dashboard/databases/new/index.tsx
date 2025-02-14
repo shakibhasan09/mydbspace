@@ -1,13 +1,13 @@
 import { createFileRoute, defer } from "@tanstack/react-router";
-import { Database } from "@web/types/database";
+import { Volume } from "@web/types/volume";
 import { api } from "@web/utils/api";
 
-export const Route = createFileRoute("/__dashboard/databases/")({
+export const Route = createFileRoute("/__dashboard/databases/new/")({
   loader: ({ context }) => {
-    const query = context.query.ensureQueryData<Database[]>({
-      queryKey: ["databases"],
+    const query = context.query.ensureQueryData<Volume[]>({
+      queryKey: ["volumes"],
       queryFn: () =>
-        api("/api/databases")
+        api("/api/volumes")
           .then((res) => res.json())
           .catch(() => {
             // TODO: Handle error
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/__dashboard/databases/")({
     });
 
     return {
-      databases: defer(query),
+      volumes: defer(query),
     };
   },
 });

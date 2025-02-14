@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"time"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/shakibhasan09/mydbspace/internal/database"
@@ -17,7 +15,7 @@ func GetDatabases(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	time.Sleep(5 * time.Second)
+	// time.Sleep(5 * time.Second)
 
 	return c.JSON(databases)
 }
