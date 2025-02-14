@@ -2,6 +2,7 @@ package database
 
 import (
 	"log"
+	"os"
 	"sync"
 
 	"github.com/jmoiron/sqlx"
@@ -14,9 +15,14 @@ var (
 )
 
 func GetDB() *sqlx.DB {
+	databasePath := os.Getenv("DATABASE_PATH")
+	if databasePath == "" {
+		databasePath = "database.db"
+	}
+
 	once.Do(func() {
 		var err error
-		db, err = sqlx.Connect("sqlite3", "database.db")
+		db, err = sqlx.Connect("sqlite3", databasePath)
 		if err != nil {
 			log.Fatal(err)
 		}

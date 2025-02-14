@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Link, useRouter, useRouterState } from "@tanstack/react-router";
+import { Link, useRouter } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
 import { Database } from "@web/types/database";
 import { api } from "@web/utils/api";
@@ -75,7 +75,11 @@ export const DatabasesList = (props: DatabasesListProps) => {
       id: "actions",
       cell: ({ row }) => (
         <div className="flex items-center gap-2 justify-end">
-          <Link to="." className={buttonVariants({ variant: "outline" })}>
+          <Link
+            to="/databases/$database"
+            params={{ database: row.original.uuid }}
+            className={buttonVariants({ variant: "outline" })}
+          >
             View
           </Link>
           <MyAlertDialog
