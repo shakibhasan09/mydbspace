@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/basicauth"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -12,6 +13,7 @@ import (
 func main() {
 	app := fiber.New()
 
+	app.Use(cors.New())
 	app.Use(logger.New())
 	app.Use(helmet.New())
 	app.Use(recover.New())
