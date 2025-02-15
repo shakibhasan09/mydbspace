@@ -5,5 +5,5 @@ export const Route = createLazyFileRoute("/__dashboard/settings/")({
 });
 
 function RouteComponent() {
-  return <div>Hello "/__dashboard/settings/"!</div>;
+  return <div></div>;
 }
