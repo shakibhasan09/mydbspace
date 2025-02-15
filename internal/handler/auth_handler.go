@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"os"
 	"time"
 
@@ -19,8 +18,6 @@ func Login(c *fiber.Ctx) error {
 	if err := c.BodyParser(&body); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
-
-	log.Println(body, os.Getenv("APP_USERNAME"), os.Getenv("APP_PASSWORD"), os.Getenv("APP_SECRET_KEY"))
 
 	if body.Username != os.Getenv("APP_USERNAME") || body.Password != os.Getenv("APP_PASSWORD") {
 		return fiber.NewError(fiber.StatusUnauthorized, "Invalid credentials")
