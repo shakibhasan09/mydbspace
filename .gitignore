@@ -29,3 +29,6 @@ tmp
 
 # Database
 database.db
+
+# Pnpm
+.pnpm-store
