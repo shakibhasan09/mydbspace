@@ -74,7 +74,6 @@ function RouteComponent() {
   });
 
   const onSubmit = async (data: formSchemaType) => {
-    console.log(JSON.stringify(data));
     setLoading(true);
     await api("/api/databases", {
       method: "POST",

@@ -310,13 +310,11 @@ export const DatabasesCreate = (props: DatabasesCreateProps) => {
           </CardContent>
           <Separator />
           <CardFooter className="pt-6 justify-end">
-            <Button type="submit" variant="outline">
-              {props.loading ? (
-                <Loader2 className="mr-2 animate-spin" />
-              ) : (
-                <Database />
-              )}{" "}
-              Create Database
+            <Button variant="outline" type="submit" disabled={props.loading}>
+              {props.loading && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {props.loading ? "Creating..." : "Create Database"}
             </Button>
           </CardFooter>
         </Card>

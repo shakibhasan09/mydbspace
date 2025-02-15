@@ -14,6 +14,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as publicIndexImport } from './routes/__public/index'
+import { Route as dashboardVolumesIndexImport } from './routes/__dashboard/volumes/index'
 import { Route as dashboardDatabasesIndexImport } from './routes/__dashboard/databases/index'
 import { Route as dashboardDatabasesNewIndexImport } from './routes/__dashboard/databases/new/index'
 import { Route as dashboardDatabasesDatabaseIndexImport } from './routes/__dashboard/databases/$database/index'
@@ -22,11 +23,14 @@ import { Route as dashboardDatabasesDatabaseEditIndexImport } from './routes/__d
 // Create Virtual Routes
 
 const dashboardRouteLazyImport = createFileRoute('/__dashboard')()
-const dashboardVolumesIndexLazyImport = createFileRoute(
-  '/__dashboard/volumes/',
-)()
 const dashboardSettingsIndexLazyImport = createFileRoute(
   '/__dashboard/settings/',
+)()
+const dashboardVolumesNewIndexLazyImport = createFileRoute(
+  '/__dashboard/volumes/new/',
+)()
+const dashboardVolumesVolumeIndexLazyImport = createFileRoute(
+  '/__dashboard/volumes/$volume/',
 )()
 
 // Create/Update Routes
@@ -44,16 +48,6 @@ const publicIndexRoute = publicIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const dashboardVolumesIndexLazyRoute = dashboardVolumesIndexLazyImport
-  .update({
-    id: '/volumes/',
-    path: '/volumes/',
-    getParentRoute: () => dashboardRouteLazyRoute,
-  } as any)
-  .lazy(() =>
-    import('./routes/__dashboard/volumes/index.lazy').then((d) => d.Route),
-  )
-
 const dashboardSettingsIndexLazyRoute = dashboardSettingsIndexLazyImport
   .update({
     id: '/settings/',
@@ -62,6 +56,16 @@ const dashboardSettingsIndexLazyRoute = dashboardSettingsIndexLazyImport
   } as any)
   .lazy(() =>
     import('./routes/__dashboard/settings/index.lazy').then((d) => d.Route),
+  )
+
+const dashboardVolumesIndexRoute = dashboardVolumesIndexImport
+  .update({
+    id: '/volumes/',
+    path: '/volumes/',
+    getParentRoute: () => dashboardRouteLazyRoute,
+  } as any)
+  .lazy(() =>
+    import('./routes/__dashboard/volumes/index.lazy').then((d) => d.Route),
   )
 
 const dashboardDatabasesIndexRoute = dashboardDatabasesIndexImport
@@ -73,6 +77,29 @@ const dashboardDatabasesIndexRoute = dashboardDatabasesIndexImport
   .lazy(() =>
     import('./routes/__dashboard/databases/index.lazy').then((d) => d.Route),
   )
+
+const dashboardVolumesNewIndexLazyRoute = dashboardVolumesNewIndexLazyImport
+  .update({
+    id: '/volumes/new/',
+    path: '/volumes/new/',
+    getParentRoute: () => dashboardRouteLazyRoute,
+  } as any)
+  .lazy(() =>
+    import('./routes/__dashboard/volumes/new/index.lazy').then((d) => d.Route),
+  )
+
+const dashboardVolumesVolumeIndexLazyRoute =
+  dashboardVolumesVolumeIndexLazyImport
+    .update({
+      id: '/volumes/$volume/',
+      path: '/volumes/$volume/',
+      getParentRoute: () => dashboardRouteLazyRoute,
+    } as any)
+    .lazy(() =>
+      import('./routes/__dashboard/volumes/$volume/index.lazy').then(
+        (d) => d.Route,
+      ),
+    )
 
 const dashboardDatabasesNewIndexRoute = dashboardDatabasesNewIndexImport
   .update({
@@ -137,18 +164,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardDatabasesIndexImport
       parentRoute: typeof dashboardRouteLazyImport
     }
+    '/__dashboard/volumes/': {
+      id: '/__dashboard/volumes/'
+      path: '/volumes'
+      fullPath: '/volumes'
+      preLoaderRoute: typeof dashboardVolumesIndexImport
+      parentRoute: typeof dashboardRouteLazyImport
+    }
     '/__dashboard/settings/': {
       id: '/__dashboard/settings/'
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof dashboardSettingsIndexLazyImport
-      parentRoute: typeof dashboardRouteLazyImport
-    }
-    '/__dashboard/volumes/': {
-      id: '/__dashboard/volumes/'
-      path: '/volumes'
-      fullPath: '/volumes'
-      preLoaderRoute: typeof dashboardVolumesIndexLazyImport
       parentRoute: typeof dashboardRouteLazyImport
     }
     '/__dashboard/databases/$database/': {
@@ -165,6 +192,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardDatabasesNewIndexImport
       parentRoute: typeof dashboardRouteLazyImport
     }
+    '/__dashboard/volumes/$volume/': {
+      id: '/__dashboard/volumes/$volume/'
+      path: '/volumes/$volume'
+      fullPath: '/volumes/$volume'
+      preLoaderRoute: typeof dashboardVolumesVolumeIndexLazyImport
+      parentRoute: typeof dashboardRouteLazyImport
+    }
+    '/__dashboard/volumes/new/': {
+      id: '/__dashboard/volumes/new/'
+      path: '/volumes/new'
+      fullPath: '/volumes/new'
+      preLoaderRoute: typeof dashboardVolumesNewIndexLazyImport
+      parentRoute: typeof dashboardRouteLazyImport
+    }
     '/__dashboard/databases/$database/edit/': {
       id: '/__dashboard/databases/$database/edit/'
       path: '/databases/$database/edit'
@@ -179,19 +220,23 @@ declare module '@tanstack/react-router' {
 
 interface dashboardRouteLazyRouteChildren {
   dashboardDatabasesIndexRoute: typeof dashboardDatabasesIndexRoute
+  dashboardVolumesIndexRoute: typeof dashboardVolumesIndexRoute
   dashboardSettingsIndexLazyRoute: typeof dashboardSettingsIndexLazyRoute
-  dashboardVolumesIndexLazyRoute: typeof dashboardVolumesIndexLazyRoute
   dashboardDatabasesDatabaseIndexRoute: typeof dashboardDatabasesDatabaseIndexRoute
   dashboardDatabasesNewIndexRoute: typeof dashboardDatabasesNewIndexRoute
+  dashboardVolumesVolumeIndexLazyRoute: typeof dashboardVolumesVolumeIndexLazyRoute
+  dashboardVolumesNewIndexLazyRoute: typeof dashboardVolumesNewIndexLazyRoute
   dashboardDatabasesDatabaseEditIndexRoute: typeof dashboardDatabasesDatabaseEditIndexRoute
 }
 
 const dashboardRouteLazyRouteChildren: dashboardRouteLazyRouteChildren = {
   dashboardDatabasesIndexRoute: dashboardDatabasesIndexRoute,
+  dashboardVolumesIndexRoute: dashboardVolumesIndexRoute,
   dashboardSettingsIndexLazyRoute: dashboardSettingsIndexLazyRoute,
-  dashboardVolumesIndexLazyRoute: dashboardVolumesIndexLazyRoute,
   dashboardDatabasesDatabaseIndexRoute: dashboardDatabasesDatabaseIndexRoute,
   dashboardDatabasesNewIndexRoute: dashboardDatabasesNewIndexRoute,
+  dashboardVolumesVolumeIndexLazyRoute: dashboardVolumesVolumeIndexLazyRoute,
+  dashboardVolumesNewIndexLazyRoute: dashboardVolumesNewIndexLazyRoute,
   dashboardDatabasesDatabaseEditIndexRoute:
     dashboardDatabasesDatabaseEditIndexRoute,
 }
@@ -203,10 +248,12 @@ export interface FileRoutesByFullPath {
   '': typeof dashboardRouteLazyRouteWithChildren
   '/': typeof publicIndexRoute
   '/databases': typeof dashboardDatabasesIndexRoute
+  '/volumes': typeof dashboardVolumesIndexRoute
   '/settings': typeof dashboardSettingsIndexLazyRoute
-  '/volumes': typeof dashboardVolumesIndexLazyRoute
   '/databases/$database': typeof dashboardDatabasesDatabaseIndexRoute
   '/databases/new': typeof dashboardDatabasesNewIndexRoute
+  '/volumes/$volume': typeof dashboardVolumesVolumeIndexLazyRoute
+  '/volumes/new': typeof dashboardVolumesNewIndexLazyRoute
   '/databases/$database/edit': typeof dashboardDatabasesDatabaseEditIndexRoute
 }
 
@@ -214,10 +261,12 @@ export interface FileRoutesByTo {
   '': typeof dashboardRouteLazyRouteWithChildren
   '/': typeof publicIndexRoute
   '/databases': typeof dashboardDatabasesIndexRoute
+  '/volumes': typeof dashboardVolumesIndexRoute
   '/settings': typeof dashboardSettingsIndexLazyRoute
-  '/volumes': typeof dashboardVolumesIndexLazyRoute
   '/databases/$database': typeof dashboardDatabasesDatabaseIndexRoute
   '/databases/new': typeof dashboardDatabasesNewIndexRoute
+  '/volumes/$volume': typeof dashboardVolumesVolumeIndexLazyRoute
+  '/volumes/new': typeof dashboardVolumesNewIndexLazyRoute
   '/databases/$database/edit': typeof dashboardDatabasesDatabaseEditIndexRoute
 }
 
@@ -226,10 +275,12 @@ export interface FileRoutesById {
   '/__dashboard': typeof dashboardRouteLazyRouteWithChildren
   '/__public/': typeof publicIndexRoute
   '/__dashboard/databases/': typeof dashboardDatabasesIndexRoute
+  '/__dashboard/volumes/': typeof dashboardVolumesIndexRoute
   '/__dashboard/settings/': typeof dashboardSettingsIndexLazyRoute
-  '/__dashboard/volumes/': typeof dashboardVolumesIndexLazyRoute
   '/__dashboard/databases/$database/': typeof dashboardDatabasesDatabaseIndexRoute
   '/__dashboard/databases/new/': typeof dashboardDatabasesNewIndexRoute
+  '/__dashboard/volumes/$volume/': typeof dashboardVolumesVolumeIndexLazyRoute
+  '/__dashboard/volumes/new/': typeof dashboardVolumesNewIndexLazyRoute
   '/__dashboard/databases/$database/edit/': typeof dashboardDatabasesDatabaseEditIndexRoute
 }
 
@@ -239,30 +290,36 @@ export interface FileRouteTypes {
     | ''
     | '/'
     | '/databases'
-    | '/settings'
     | '/volumes'
+    | '/settings'
     | '/databases/$database'
     | '/databases/new'
+    | '/volumes/$volume'
+    | '/volumes/new'
     | '/databases/$database/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | ''
     | '/'
     | '/databases'
-    | '/settings'
     | '/volumes'
+    | '/settings'
     | '/databases/$database'
     | '/databases/new'
+    | '/volumes/$volume'
+    | '/volumes/new'
     | '/databases/$database/edit'
   id:
     | '__root__'
     | '/__dashboard'
     | '/__public/'
     | '/__dashboard/databases/'
-    | '/__dashboard/settings/'
     | '/__dashboard/volumes/'
+    | '/__dashboard/settings/'
     | '/__dashboard/databases/$database/'
     | '/__dashboard/databases/new/'
+    | '/__dashboard/volumes/$volume/'
+    | '/__dashboard/volumes/new/'
     | '/__dashboard/databases/$database/edit/'
   fileRoutesById: FileRoutesById
 }
@@ -295,10 +352,12 @@ export const routeTree = rootRoute
       "filePath": "__dashboard/route.lazy.tsx",
       "children": [
         "/__dashboard/databases/",
-        "/__dashboard/settings/",
         "/__dashboard/volumes/",
+        "/__dashboard/settings/",
         "/__dashboard/databases/$database/",
         "/__dashboard/databases/new/",
+        "/__dashboard/volumes/$volume/",
+        "/__dashboard/volumes/new/",
         "/__dashboard/databases/$database/edit/"
       ]
     },
@@ -309,12 +368,12 @@ export const routeTree = rootRoute
       "filePath": "__dashboard/databases/index.tsx",
       "parent": "/__dashboard"
     },
-    "/__dashboard/settings/": {
-      "filePath": "__dashboard/settings/index.lazy.tsx",
+    "/__dashboard/volumes/": {
+      "filePath": "__dashboard/volumes/index.tsx",
       "parent": "/__dashboard"
     },
-    "/__dashboard/volumes/": {
-      "filePath": "__dashboard/volumes/index.lazy.tsx",
+    "/__dashboard/settings/": {
+      "filePath": "__dashboard/settings/index.lazy.tsx",
       "parent": "/__dashboard"
     },
     "/__dashboard/databases/$database/": {
@@ -323,6 +382,14 @@ export const routeTree = rootRoute
     },
     "/__dashboard/databases/new/": {
       "filePath": "__dashboard/databases/new/index.tsx",
+      "parent": "/__dashboard"
+    },
+    "/__dashboard/volumes/$volume/": {
+      "filePath": "__dashboard/volumes/$volume/index.lazy.tsx",
+      "parent": "/__dashboard"
+    },
+    "/__dashboard/volumes/new/": {
+      "filePath": "__dashboard/volumes/new/index.lazy.tsx",
       "parent": "/__dashboard"
     },
     "/__dashboard/databases/$database/edit/": {

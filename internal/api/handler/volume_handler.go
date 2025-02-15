@@ -15,8 +15,6 @@ func GetVolumes(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	// time.Sleep(5 * time.Second)
-
 	return c.JSON(volumes)
 }
 
