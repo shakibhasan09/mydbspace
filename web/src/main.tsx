@@ -7,7 +7,6 @@ import { routeTree } from "@web/routeTree.gen";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "./components/ui/sonner";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const queryClient = new QueryClient();
 
@@ -26,7 +25,6 @@ createRoot(document.getElementById("root")!).render(
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
         <Toaster />
-        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </ThemeProvider>
   </StrictMode>
