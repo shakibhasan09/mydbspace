@@ -17,6 +17,7 @@ import { Route as publicIndexImport } from './routes/__public/index'
 import { Route as dashboardDatabasesIndexImport } from './routes/__dashboard/databases/index'
 import { Route as dashboardDatabasesNewIndexImport } from './routes/__dashboard/databases/new/index'
 import { Route as dashboardDatabasesDatabaseIndexImport } from './routes/__dashboard/databases/$database/index'
+import { Route as dashboardDatabasesDatabaseEditIndexImport } from './routes/__dashboard/databases/$database/edit/index'
 
 // Create Virtual Routes
 
@@ -26,9 +27,6 @@ const dashboardVolumesIndexLazyImport = createFileRoute(
 )()
 const dashboardSettingsIndexLazyImport = createFileRoute(
   '/__dashboard/settings/',
-)()
-const dashboardDatabasesDatabaseEditIndexLazyImport = createFileRoute(
-  '/__dashboard/databases/$database/edit/',
 )()
 
 // Create/Update Routes
@@ -101,8 +99,8 @@ const dashboardDatabasesDatabaseIndexRoute =
       ),
     )
 
-const dashboardDatabasesDatabaseEditIndexLazyRoute =
-  dashboardDatabasesDatabaseEditIndexLazyImport
+const dashboardDatabasesDatabaseEditIndexRoute =
+  dashboardDatabasesDatabaseEditIndexImport
     .update({
       id: '/databases/$database/edit/',
       path: '/databases/$database/edit/',
@@ -171,7 +169,7 @@ declare module '@tanstack/react-router' {
       id: '/__dashboard/databases/$database/edit/'
       path: '/databases/$database/edit'
       fullPath: '/databases/$database/edit'
-      preLoaderRoute: typeof dashboardDatabasesDatabaseEditIndexLazyImport
+      preLoaderRoute: typeof dashboardDatabasesDatabaseEditIndexImport
       parentRoute: typeof dashboardRouteLazyImport
     }
   }
@@ -185,7 +183,7 @@ interface dashboardRouteLazyRouteChildren {
   dashboardVolumesIndexLazyRoute: typeof dashboardVolumesIndexLazyRoute
   dashboardDatabasesDatabaseIndexRoute: typeof dashboardDatabasesDatabaseIndexRoute
   dashboardDatabasesNewIndexRoute: typeof dashboardDatabasesNewIndexRoute
-  dashboardDatabasesDatabaseEditIndexLazyRoute: typeof dashboardDatabasesDatabaseEditIndexLazyRoute
+  dashboardDatabasesDatabaseEditIndexRoute: typeof dashboardDatabasesDatabaseEditIndexRoute
 }
 
 const dashboardRouteLazyRouteChildren: dashboardRouteLazyRouteChildren = {
@@ -194,8 +192,8 @@ const dashboardRouteLazyRouteChildren: dashboardRouteLazyRouteChildren = {
   dashboardVolumesIndexLazyRoute: dashboardVolumesIndexLazyRoute,
   dashboardDatabasesDatabaseIndexRoute: dashboardDatabasesDatabaseIndexRoute,
   dashboardDatabasesNewIndexRoute: dashboardDatabasesNewIndexRoute,
-  dashboardDatabasesDatabaseEditIndexLazyRoute:
-    dashboardDatabasesDatabaseEditIndexLazyRoute,
+  dashboardDatabasesDatabaseEditIndexRoute:
+    dashboardDatabasesDatabaseEditIndexRoute,
 }
 
 const dashboardRouteLazyRouteWithChildren =
@@ -209,7 +207,7 @@ export interface FileRoutesByFullPath {
   '/volumes': typeof dashboardVolumesIndexLazyRoute
   '/databases/$database': typeof dashboardDatabasesDatabaseIndexRoute
   '/databases/new': typeof dashboardDatabasesNewIndexRoute
-  '/databases/$database/edit': typeof dashboardDatabasesDatabaseEditIndexLazyRoute
+  '/databases/$database/edit': typeof dashboardDatabasesDatabaseEditIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -220,7 +218,7 @@ export interface FileRoutesByTo {
   '/volumes': typeof dashboardVolumesIndexLazyRoute
   '/databases/$database': typeof dashboardDatabasesDatabaseIndexRoute
   '/databases/new': typeof dashboardDatabasesNewIndexRoute
-  '/databases/$database/edit': typeof dashboardDatabasesDatabaseEditIndexLazyRoute
+  '/databases/$database/edit': typeof dashboardDatabasesDatabaseEditIndexRoute
 }
 
 export interface FileRoutesById {
@@ -232,7 +230,7 @@ export interface FileRoutesById {
   '/__dashboard/volumes/': typeof dashboardVolumesIndexLazyRoute
   '/__dashboard/databases/$database/': typeof dashboardDatabasesDatabaseIndexRoute
   '/__dashboard/databases/new/': typeof dashboardDatabasesNewIndexRoute
-  '/__dashboard/databases/$database/edit/': typeof dashboardDatabasesDatabaseEditIndexLazyRoute
+  '/__dashboard/databases/$database/edit/': typeof dashboardDatabasesDatabaseEditIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -328,7 +326,7 @@ export const routeTree = rootRoute
       "parent": "/__dashboard"
     },
     "/__dashboard/databases/$database/edit/": {
-      "filePath": "__dashboard/databases/$database/edit/index.lazy.tsx",
+      "filePath": "__dashboard/databases/$database/edit/index.tsx",
       "parent": "/__dashboard"
     }
   }

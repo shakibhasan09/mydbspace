@@ -104,10 +104,14 @@ func DeleteDatabase(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"message": "Database deleted successfully"})
 }
 
+type updateDatabase struct {
+	Name string `json:"name"`
+}
+
 func UpdateDatabase(c *fiber.Ctx) error {
 	db := database.GetDB()
 
-	body := models.Database{}
+	var body updateDatabase
 	if err := c.BodyParser(&body); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
@@ -119,7 +123,7 @@ func UpdateDatabase(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusNotFound, err.Error())
 	}
 
-	if _, err := db.Exec("UPDATE databases SET name = ?, environment = ?, domain = ? WHERE uuid = ?", body.Name, body.Environment, body.Domain, c.Params("uuid")); err != nil {
+	if _, err := db.Exec("UPDATE databases SET name = ? WHERE uuid = ?", body.Name, c.Params("uuid")); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 

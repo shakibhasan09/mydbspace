@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Database } from "@web/types/database";
 import { api } from "@web/utils/api";
 import { cn } from "@web/utils/cn";
-import { DatabaseIcon, Trash } from "lucide-react";
+import { DatabaseIcon, Edit, Trash } from "lucide-react";
 import React from "react";
 import { toast } from "sonner";
 import { MyAlertDialog } from "../shared/alert-dialog";
@@ -81,6 +81,13 @@ export const DatabasesList = (props: DatabasesListProps) => {
             className={buttonVariants({ variant: "outline" })}
           >
             View
+          </Link>
+          <Link
+            to="/databases/$database/edit"
+            params={{ database: row.original.uuid }}
+            className={buttonVariants({ variant: "outline", size: "icon" })}
+          >
+            <Edit />
           </Link>
           <MyAlertDialog
             trigger={
