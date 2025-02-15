@@ -1,19 +1,33 @@
 package main
 
 import (
+	"log"
+	"os"
+
+	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/basicauth"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/joho/godotenv"
 	"github.com/shakibhasan09/mydbspace/internal/handler"
 )
 
 func main() {
+	if os.Getenv("ENV") == "DEV" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
+	}
+
 	app := fiber.New()
 
-	app.Use(cors.New(cors.Config{AllowOrigins: "http://localhost:5173"}))
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     "http://localhost:5173",
+		AllowCredentials: true,
+	}))
 
 	app.Use(logger.New())
 	app.Use(helmet.New())
@@ -27,10 +41,9 @@ func main() {
 
 	api := app.Group("/api")
 
-	api.Use(basicauth.New(basicauth.Config{
-		Users: map[string]string{
-			"admin": "123456",
-		},
+	api.Use(jwtware.New(jwtware.Config{
+		SigningKey:  jwtware.SigningKey{Key: []byte(os.Getenv("APP_SECRET_KEY"))},
+		TokenLookup: "cookie:jwt",
 	}))
 
 	// Volumes
