@@ -46,6 +46,9 @@ func main() {
 		TokenLookup: "cookie:jwt",
 	}))
 
+	// Check
+	api.Get("/authorize", handler.Authorize)
+
 	// Volumes
 	api.Get("/volumes", handler.GetVolumes)
 	api.Get("/volumes/:uuid", handler.GetVolume)
