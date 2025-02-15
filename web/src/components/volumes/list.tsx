@@ -62,15 +62,8 @@ export const VolumesList = (props: VolumesListProps) => {
       cell: ({ row }) => (
         <div className="flex items-center gap-2 justify-end">
           <Link
-            to="/databases/$database"
-            params={{ database: row.original.uuid }}
-            className={buttonVariants({ variant: "outline" })}
-          >
-            View
-          </Link>
-          <Link
-            to="/databases/$database/edit"
-            params={{ database: row.original.uuid }}
+            to="/volumes/$volume/edit"
+            params={{ volume: row.original.uuid }}
             className={buttonVariants({ variant: "outline", size: "icon" })}
           >
             <Edit />
@@ -91,8 +84,8 @@ export const VolumesList = (props: VolumesListProps) => {
             }
             open={deleteDialog}
             onOpenChange={setDeleteDialog}
-            title="Delete Database"
-            description="Are you sure you want to delete this database?"
+            title="Delete Volume"
+            description="Are you sure you want to delete this volume?"
           />
         </div>
       ),
