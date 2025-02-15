@@ -19,7 +19,7 @@
     "type=bind,source=${localEnv:HOME}/.ssh,target=/home/ubuntu/.ssh,readonly",
     "type=bind,source=${localEnv:HOME}/.gitconfig,target=/home/ubuntu/.gitconfig"
   ],
-  "postCreateCommand": "cd web && pnpm install",
+  "postCreateCommand": "go mod download && cd web && pnpm install",
   "customizations": {
     "vscode": {
       "extensions": [
