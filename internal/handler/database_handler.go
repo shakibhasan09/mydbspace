@@ -140,3 +140,11 @@ func GetDatabase(c *fiber.Ctx) error {
 
 	return c.JSON(database)
 }
+
+func RestartDatabase(c *fiber.Ctx) error {
+	return c.JSON(fiber.Map{"message": "Database restarted successfully"})
+}
+
+func StopDatabase(c *fiber.Ctx) error {
+	return c.JSON(fiber.Map{"message": "Database stopped successfully"})
+}

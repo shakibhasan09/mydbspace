@@ -7,18 +7,23 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/helmet"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/shakibhasan09/mydbspace/internal/api/handler"
+	"github.com/shakibhasan09/mydbspace/internal/handler"
 )
 
 func main() {
 	app := fiber.New()
 
-	app.Use(cors.New())
+	app.Use(cors.New(cors.Config{AllowOrigins: "http://localhost:5173"}))
+
 	app.Use(logger.New())
 	app.Use(helmet.New())
 	app.Use(recover.New())
 
 	app.Static("/", "web/dist")
+
+	// Auth
+	app.Post("/login", handler.Login)
+	app.Post("/logout", handler.Logout)
 
 	api := app.Group("/api")
 
@@ -41,6 +46,8 @@ func main() {
 	api.Post("/databases", handler.CreateDatabase)
 	api.Put("/databases/:uuid", handler.UpdateDatabase)
 	api.Delete("/databases/:uuid", handler.DeleteDatabase)
+	api.Get("/databases/:uuid/stop", handler.StopDatabase)
+	api.Get("/databases/:uuid/restart", handler.RestartDatabase)
 
 	app.Get("*", func(c *fiber.Ctx) error {
 		return c.SendFile("web/dist/index.html")
