@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/shakibhasan09/mydbspace/internal/database"
 	"github.com/shakibhasan09/mydbspace/internal/database/models"
+	"github.com/shakibhasan09/mydbspace/internal/docker"
 )
 
 func GetDatabases(c *fiber.Ctx) error {
@@ -67,8 +68,9 @@ func CreateDatabase(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusNotFound, "Volume already has a database")
 	}
 
+	dbUuid := uuid.New().String()
 	if _, err := db.NamedExec("INSERT INTO databases (uuid, volume_uuid, name, type, image_name, image_version, environment, domain, port, status) VALUES (:uuid, :volume_uuid, :name, :type, :image_name, :image_version, :environment, :domain, :port, :status)", &models.Database{
-		Uuid:         uuid.New().String(),
+		Uuid:         dbUuid,
 		VolumeUuid:   volume.Uuid,
 		Name:         body.Name,
 		Type:         body.Type,
@@ -83,10 +85,16 @@ func CreateDatabase(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	// TODO: Provision database in the background
+	var insertedDatabase models.Database
+	if err := db.Get(&insertedDatabase, "SELECT * FROM databases WHERE uuid = ?", dbUuid); err != nil {
+		log.Println("Error getting database:", err)
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+
+	// Provision database in the background
+	go docker.ProvisionDatabase(&insertedDatabase)
 
 	return c.JSON(fiber.Map{"message": "Database created successfully"})
-
 }
 
 func DeleteDatabase(c *fiber.Ctx) error {
