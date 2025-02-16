@@ -16,8 +16,6 @@ services:
       - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
       - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
 
-      - "--entryPoints.websecure.http.middlewares=securityheaders@docker"
-
       - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.myresolver.acme.email=shakibhasan.me09@gmail.com" # TODO: Add email
@@ -49,7 +47,6 @@ services:
       - "traefik.http.routers.mydbspaceui.tls=true"
       - "traefik.http.routers.mydbspaceui.tls.certresolver=myresolver"
       - "traefik.http.routers.mydbspaceui.entrypoints=websecure"
-      - "traefik.http.routers.mydbspaceui.middlewares=securityheaders"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "mydbspace_data:/var/lib/mydbspace"
