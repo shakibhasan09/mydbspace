@@ -29,7 +29,7 @@ func GetActiveDBConfig(dbtype string) map[string]string {
 		}
 	}
 
-	if dbtype == "mongo" {
+	if dbtype == "mongodb" {
 		return map[string]string{
 			"internalPort": "27017",
 			"data":         "/data/db",
