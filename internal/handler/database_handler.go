@@ -15,7 +15,7 @@ func GetDatabases(c *fiber.Ctx) error {
 	db := database.GetDB()
 
 	databases := []models.Database{}
-	if err := db.Select(&databases, "SELECT * FROM databases"); err != nil {
+	if err := db.Select(&databases, "SELECT * FROM databases ORDER BY created_at DESC"); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 

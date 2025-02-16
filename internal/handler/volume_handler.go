@@ -5,13 +5,14 @@ import (
 	"github.com/google/uuid"
 	"github.com/shakibhasan09/mydbspace/internal/database"
 	"github.com/shakibhasan09/mydbspace/internal/database/models"
+	"github.com/shakibhasan09/mydbspace/internal/docker"
 )
 
 func GetVolumes(c *fiber.Ctx) error {
 	db := database.GetDB()
 
 	volumes := []models.Volume{}
-	if err := db.Select(&volumes, "SELECT * FROM volumes"); err != nil {
+	if err := db.Select(&volumes, "SELECT * FROM volumes ORDER BY created_at DESC"); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
@@ -28,9 +29,12 @@ func CreateVolume(c *fiber.Ctx) error {
 
 	// TODO: Validate body
 
-	if _, err := db.NamedExec("INSERT INTO volumes (uuid, key, name) VALUES (:uuid, :key, :name)", &models.Volume{Uuid: uuid.New().String(), Key: body.Key, Name: body.Name}); err != nil {
+	volumeUuid := uuid.New().String()
+	if _, err := db.NamedExec("INSERT INTO volumes (uuid, key, name) VALUES (:uuid, :key, :name)", &models.Volume{Uuid: volumeUuid, Key: body.Key, Name: body.Name}); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
+
+	go docker.ProvisionVolume(volumeUuid)
 
 	return c.JSON(fiber.Map{"message": "Volume created successfully"})
 }
