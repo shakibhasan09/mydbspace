@@ -1,38 +1,58 @@
 services:
   traefik:
     image: "traefik:v3.3"
+    container_name: "traefik"
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
 
       - "--entryPoints.web.address=:80"
       - "--entryPoints.websecure.address=:443"
-
       - "--entryPoints.postgres.address=:5432"
+      - "--entryPoints.mysql.address=:3306"
+      - "--entryPoints.mongo.address=:27017"
+      - "--entryPoints.redis.address=:6379"
 
       - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
-      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
-      - "--certificatesresolvers.myresolver.acme.email=shakibhasan.me09@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.email=shakibhasan.me09@gmail.com" # TODO: Add email
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
       - "443:443"
       - "5432:5432"
+      - "3306:3306"
+      - "27017:27017"
+      - "6379:6379"
     volumes:
-      - "./letsencrypt:/letsencrypt"
+      - "letsencrypt_data:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - mydbspace_network
 
-  mydb:
-    image: "postgres"
+  mydbspaceui:
+    image: "sakibhasanme09/mydbspaceui"
+    container_name: "mydbspaceui"
     environment:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgres"
-      POSTGRES_DB: "postgres"
+      APP_USERNAME: "admin" # TODO: Add username
+      APP_PASSWORD: "admin" # TODO: Add password
+      APP_SECRET_KEY: "402e6075194c734807e5f86cbecf25d898263c933b86f08a1fb7bf800e4da" # TODO: Add secret
+      ALLOWED_ORIGINS: "https://mydbspace.nodeflare.dev" # TODO: Add allowed origins
     labels:
       - "traefik.enable=true"
-      - "traefik.tcp.routers.mydb.entrypoints=postgres"
-      - "traefik.tcp.routers.mydb.rule=HostSNI(`mydb.nodeflare.dev`)"
-      - "traefik.tcp.routers.mydb.tls=true"
-      - "traefik.tcp.routers.mydb.tls.certresolver=myresolver"
-      - "traefik.tcp.services.mydb.loadbalancer.server.port=5432"
+      - "traefik.http.routers.mydbspaceui.rule=Host(`mydbspace.nodeflare.dev`)" # TODO: Add domain
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "mydbspace_data:/var/lib/mydbspace"
+    networks:
+      - mydbspace_network
+
+volumes:
+  mydbspace_data:
+  letsencrypt_data:
+
+
+networks:
+  mydbspace_network:
+    # TODO: Add network by running (docker network create mydbspace_network)
+    external: true
