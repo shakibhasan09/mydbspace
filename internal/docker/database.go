@@ -36,7 +36,7 @@ func ProvisionDatabase(databaseInfo *models.Database) {
 	}
 	defer cli.Close()
 
-	activeConfig := config.GetActiveDBConfig(databaseInfo.Type)
+	activeConfig := config.GetActiveDBConfig(databaseInfo)
 	dockerImage := databaseInfo.ImageName + ":" + databaseInfo.ImageVersion
 
 	pullResp, err := cli.ImagePull(ctx, dockerImage, image.PullOptions{})
@@ -63,26 +63,26 @@ func ProvisionDatabase(databaseInfo *models.Database) {
 	}
 
 	if databaseInfo.Domain != nil {
-		containerConfig.Labels = map[string]string{
-			"traefik.enable": "true",
-			"traefik.tcp.routers." + databaseInfo.Uuid + ".entrypoints":               activeConfig["entryPoint"],
-			"traefik.tcp.routers." + databaseInfo.Uuid + ".rule":                      "HostSNI(`" + *databaseInfo.Domain + "`)",
-			"traefik.tcp.routers." + databaseInfo.Uuid + ".tls":                       "true",
-			"traefik.tcp.routers." + databaseInfo.Uuid + ".tls.certresolver":          "myresolver",
-			"traefik.tcp.services." + databaseInfo.Uuid + ".loadbalancer.server.port": activeConfig["internalPort"],
+		if labelsConfig, ok := activeConfig["labels"].(map[string]interface{}); ok {
+			labels := make(map[string]string)
+			for k, v := range labelsConfig {
+				labels[k] = fmt.Sprintf("%v", v)
+			}
+			containerConfig.Labels = labels
 		}
 	}
 
 	log.Printf("env: %v", env)
+	log.Printf("Labels: %v", containerConfig.Labels)
 
 	hostConfig := &container.HostConfig{
 		Binds: []string{
-			databaseInfo.VolumeUuid + ":" + activeConfig["data"],
+			databaseInfo.VolumeUuid + ":" + activeConfig["data"].(string),
 		},
 	}
 
 	if databaseInfo.Port != nil {
-		port, err := strconv.Atoi(activeConfig["internalPort"])
+		port, err := strconv.Atoi(activeConfig["internalPort"].(string))
 		if err != nil {
 			log.Printf("Converting port failed: %v", err)
 			return
