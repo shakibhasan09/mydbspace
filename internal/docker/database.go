@@ -62,6 +62,17 @@ func ProvisionDatabase(databaseInfo *models.Database) {
 		Env:   env,
 	}
 
+	if databaseInfo.Domain != nil {
+		containerConfig.Labels = map[string]string{
+			"traefik.enable": "true",
+			"traefik.tcp.routers." + databaseInfo.Uuid + ".entrypoints":               activeConfig["entryPoint"],
+			"traefik.tcp.routers." + databaseInfo.Uuid + ".rule":                      "HostSNI(`" + *databaseInfo.Domain + "`)",
+			"traefik.tcp.routers." + databaseInfo.Uuid + ".tls":                       "true",
+			"traefik.tcp.routers." + databaseInfo.Uuid + ".tls.certresolver":          "myresolver",
+			"traefik.tcp.services." + databaseInfo.Uuid + ".loadbalancer.server.port": activeConfig["internalPort"],
+		}
+	}
+
 	log.Printf("env: %v", env)
 
 	hostConfig := &container.HostConfig{
