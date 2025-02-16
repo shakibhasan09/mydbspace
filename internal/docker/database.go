@@ -36,6 +36,8 @@ func ProvisionDatabase(databaseInfo *models.Database) {
 	}
 	defer cli.Close()
 
+	log.Printf("Provisioning databaseInfo: %v", databaseInfo)
+
 	activeConfig := config.GetActiveDBConfig(databaseInfo)
 	dockerImage := databaseInfo.ImageName + ":" + databaseInfo.ImageVersion
 

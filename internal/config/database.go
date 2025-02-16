@@ -24,15 +24,7 @@ func GetActiveDBConfig(database *models.Database) map[string]interface{} {
 			"internalPort": "3306",
 			"data":         "/var/lib/mysql",
 			"entryPoint":   "mysql",
-			"labels": map[string]interface{}{
-				"traefik.enable": "true",
-				"traefik.tcp.routers." + database.Uuid + ".entrypoints":               "mysql",
-				"traefik.tcp.routers." + database.Uuid + ".rule":                      "HostSNI(`" + *database.Domain + "`)",
-				"traefik.tcp.routers." + database.Uuid + ".tls":                       "true",
-				"traefik.tcp.routers." + database.Uuid + ".tls.certresolver":          "cloudflare",
-				"traefik.tcp.routers." + database.Uuid + ".tls.passthrough":           "true",
-				"traefik.tcp.services." + database.Uuid + ".loadbalancer.server.port": "3306",
-			},
+			"labels":       map[string]interface{}{},
 		}
 	}
 
@@ -41,15 +33,7 @@ func GetActiveDBConfig(database *models.Database) map[string]interface{} {
 			"internalPort": "3306",
 			"data":         "/var/lib/mysql",
 			"entryPoint":   "mysql",
-			"labels": map[string]interface{}{
-				"traefik.enable": "true",
-				"traefik.tcp.routers." + database.Uuid + ".entrypoints":               "mysql",
-				"traefik.tcp.routers." + database.Uuid + ".rule":                      "HostSNI(`" + *database.Domain + "`)",
-				"traefik.tcp.routers." + database.Uuid + ".tls":                       "true",
-				"traefik.tcp.routers." + database.Uuid + ".tls.certresolver":          "cloudflare",
-				"traefik.tcp.routers." + database.Uuid + ".tls.passthrough":           "true",
-				"traefik.tcp.services." + database.Uuid + ".loadbalancer.server.port": "3306",
-			},
+			"labels":       map[string]interface{}{},
 		}
 	}
 
@@ -67,15 +51,7 @@ func GetActiveDBConfig(database *models.Database) map[string]interface{} {
 			"internalPort": "27017",
 			"data":         "/data/db",
 			"entryPoint":   "mongo",
-			"labels": map[string]interface{}{
-				"traefik.enable": "true",
-				"traefik.tcp.routers." + database.Uuid + ".entrypoints":               "mongo",
-				"traefik.tcp.routers." + database.Uuid + ".rule":                      "HostSNI(`" + *database.Domain + "`)",
-				"traefik.tcp.routers." + database.Uuid + ".tls":                       "true",
-				"traefik.tcp.routers." + database.Uuid + ".tls.certresolver":          "cloudflare",
-				"traefik.tcp.routers." + database.Uuid + ".tls.passthrough":           "true",
-				"traefik.tcp.services." + database.Uuid + ".loadbalancer.server.port": "27017",
-			},
+			"labels":       map[string]interface{}{},
 		}
 	}
 
