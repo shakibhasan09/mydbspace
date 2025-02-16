@@ -13,10 +13,13 @@ services:
       - "--entryPoints.mongo.address=:27017"
       - "--entryPoints.redis.address=:6379"
 
-      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
-      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.myresolver.acme.email=shakibhasan.me09@gmail.com" # TODO: Add email
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      #- "--certificatesresolvers.cloudflare.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+
+      - "--certificatesresolvers.cloudflare.acme.dnschallenge=true"
+      - "--certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare"
+      - "--certificatesresolvers.cloudflare.acme.email=shakibhasan.me09@gmail.com" # TODO: Add email
+      - "--certificatesresolvers.cloudflare.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=1.1.1.1:53,1.0.0.1:53"
     ports:
       - "80:80"
       - "443:443"
@@ -24,6 +27,9 @@ services:
       - "3306:3306"
       - "27017:27017"
       - "6379:6379"
+    environment:
+      CF_API_EMAIL: "shakibhasan.me09@gmail.com" # TODO: Add Cloudflare email
+      CF_DNS_API_TOKEN: "Ug2rktPU4eI_UMskhdq7FSHMjJTBuv94z0yXtOzp" # TODO: Add Cloudflare API token; permissions: zone:read,zone-settings:read,dns:edit
     volumes:
       - "letsencrypt_data:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -40,10 +46,11 @@ services:
       ALLOWED_ORIGINS: "https://mydbspace.nodeflare.dev" # TODO: Add allowed origins
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.mydbspaceui.rule=Host(`mydbspace.nodeflare.dev`)" # TODO: Add domain
+      - "traefik.http.routers.mydbspaceui.rule=Host(`mydbspace.nodeflare.dev`)" # TODO: Add dashboard domain
       - "traefik.http.routers.mydbspaceui.tls=true"
-      - "traefik.http.routers.mydbspaceui.tls.certresolver=myresolver"
+      - "traefik.http.routers.mydbspaceui.tls.certresolver=cloudflare"
       - "traefik.http.routers.mydbspaceui.entrypoints=websecure"
+      - "traefik.http.services.mydbspaceui.loadbalancer.server.port=3000"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "mydbspace_data:/var/lib/mydbspace"
