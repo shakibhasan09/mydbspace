@@ -62,7 +62,11 @@ export const DatabasesList = (props: DatabasesListProps) => {
     {
       accessorKey: "status",
       header: "Status",
-      cell: ({ row }) => <Badge variant="outline">{row.original.status}</Badge>,
+      cell: ({ row }) => (
+        <Badge variant={row.original.status.toLowerCase() as any}>
+          {row.original.status}
+        </Badge>
+      ),
     },
     {
       accessorKey: "created_at",

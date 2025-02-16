@@ -81,7 +81,12 @@ export const DatabasesView = (props: DatabasesViewProps) => {
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Status</span>
               <div className="flex items-center gap-2">
-                <Circle className="size-4 fill-green-500 text-green-500 animate-pulse" />
+                {props.database.status.toLowerCase() === "running" && (
+                  <Circle className="size-4 fill-green-500 text-green-500 animate-pulse" />
+                )}
+                {props.database.status.toLowerCase() === "provisioning" && (
+                  <Circle className="size-4 fill-yellow-500 text-yellow-500 animate-pulse" />
+                )}
                 <span className="font-medium uppercase">
                   {props.database.status}
                 </span>
@@ -89,7 +94,7 @@ export const DatabasesView = (props: DatabasesViewProps) => {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Uptime</span>
-              <span className="font-medium">15 days</span>
+              <span className="font-medium">0 days</span>
             </div>
           </CardContent>
           <Separator />
