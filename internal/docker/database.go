@@ -2,6 +2,8 @@ package docker
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -9,13 +11,21 @@ import (
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/image"
+	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
+	"github.com/shakibhasan09/mydbspace/internal/config"
+	"github.com/shakibhasan09/mydbspace/internal/database"
 	"github.com/shakibhasan09/mydbspace/internal/database/models"
 )
 
-func ProvisionDatabase(database *models.Database) {
-	log.Println("Provisioning database...")
+type EnvType struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+func ProvisionDatabase(databaseInfo *models.Database) {
+	log.Println("Provisioning databaseInfo...")
 
 	ctx := context.Background()
 
@@ -24,8 +34,12 @@ func ProvisionDatabase(database *models.Database) {
 		log.Printf("Error creating Docker client: %v", err)
 		return
 	}
+	defer cli.Close()
 
-	pullResp, err := cli.ImagePull(ctx, database.ImageName, image.PullOptions{})
+	activeConfig := config.GetActiveDBConfig(databaseInfo.Type)
+	dockerImage := databaseInfo.ImageName + ":" + databaseInfo.ImageVersion
+
+	pullResp, err := cli.ImagePull(ctx, dockerImage, image.PullOptions{})
 	if err != nil {
 		log.Printf("Error pulling image: %v", err)
 		return
@@ -33,35 +47,59 @@ func ProvisionDatabase(database *models.Database) {
 	defer pullResp.Close()
 	io.Copy(os.Stdout, pullResp)
 
-	containerConfig := &container.Config{
-		Image: database.ImageName,
-		Env: []string{
-			"POSTGRES_DB=" + database.Name,
-		},
+	var parseEnv []EnvType
+	if err := json.Unmarshal([]byte(databaseInfo.Environment), &parseEnv); err != nil {
+		log.Printf("Parsing environment failed: %v", err)
+		return
 	}
+
+	var env []string
+	for _, e := range parseEnv {
+		env = append(env, e.Key+"="+e.Value)
+	}
+	containerConfig := &container.Config{
+		Image: dockerImage,
+		Env:   env,
+	}
+
+	log.Printf("env: %v", env)
 
 	hostConfig := &container.HostConfig{
-		PortBindings: nat.PortMap{
-			"5432/tcp": []nat.PortBinding{
-				{
-					HostIP:   "0.0.0.0",
-					HostPort: strconv.Itoa(*database.Port),
-				},
-			},
-		},
 		Binds: []string{
-			database.VolumeUuid + ":/var/lib/postgresql/data",
+			databaseInfo.VolumeUuid + ":" + activeConfig["data"],
 		},
 	}
 
-	// Create the container
+	if databaseInfo.Port != nil {
+		port, err := strconv.Atoi(activeConfig["internalPort"])
+		if err != nil {
+			log.Printf("Converting port failed: %v", err)
+			return
+		}
+		containerPort := nat.Port(fmt.Sprintf("%d/tcp", port))
+		hostConfig.PortBindings = nat.PortMap{
+			containerPort: []nat.PortBinding{
+				{
+					HostIP:   "0.0.0.0",
+					HostPort: strconv.Itoa(*databaseInfo.Port),
+				},
+			},
+		}
+	}
+
+	netConfig := &network.NetworkingConfig{
+		EndpointsConfig: map[string]*network.EndpointSettings{
+			"mydbspace_network": {},
+		},
+	}
+
 	resp, err := cli.ContainerCreate(
 		ctx,
 		containerConfig,
 		hostConfig,
+		netConfig,
 		nil,
-		nil,
-		database.Name,
+		databaseInfo.Uuid,
 	)
 	if err != nil {
 		log.Printf("Error creating container: %v", err)
@@ -74,4 +112,10 @@ func ProvisionDatabase(database *models.Database) {
 	}
 
 	log.Printf("Successfully started container %s\n", resp.ID)
+
+	db := database.GetDB()
+	if _, err := db.Exec("UPDATE databases SET status = ? WHERE uuid = ?", "running", databaseInfo.Uuid); err != nil {
+		log.Printf("Error updating container id: %v", err)
+		return
+	}
 }
