@@ -23,5 +23,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/mydbspaceui:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/mydbspaceui:${{ github.sha }}
+            ${{ env.DOCKERHUB_USERNAME }}/mydbspaceui:latest
+            ${{ env.DOCKERHUB_USERNAME }}/mydbspaceui:${{ github.sha }}
