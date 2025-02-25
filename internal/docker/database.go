@@ -81,6 +81,9 @@ func ProvisionDatabase(databaseInfo *models.Database) {
 		Binds: []string{
 			databaseInfo.VolumeUuid + ":" + activeConfig["data"].(string),
 		},
+		RestartPolicy: container.RestartPolicy{
+			Name: "unless-stopped",
+		},
 	}
 
 	if databaseInfo.Port != nil {
