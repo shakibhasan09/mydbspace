@@ -38,6 +38,7 @@ services:
   traefik:
     image: "traefik:v3.3"
     container_name: "traefik"
+    restart: unless-stopped
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -75,6 +76,7 @@ services:
   mydbspaceui:
     image: "sakibhasanme09/mydbspaceui"
     container_name: "mydbspaceui"
+    restart: unless-stopped
     environment:
       APP_USERNAME: "admin" # TODO: Add username
       APP_PASSWORD: "admin" # TODO: Add password
